@@ -13,7 +13,6 @@ import re
 # (For our purposes, a number is any character that is 0,1,2,3,4,5,6,7,8, or 9.)
 # Note: Be sure to use RegEx!
 def starts_with_non_number(s):
-
   x = re.search("[^0-9]",s[0])
   if x:
      return True
@@ -27,8 +26,14 @@ def starts_with_non_number(s):
 # Note: Be sure to use RegEx and that it works for any whitespace character 
 # with at least one character on either side!
 def multiple_words(s):
-    
-  return 
+  if s == " ":
+    return False
+  
+  x = re.search("[A-Za-z0-9]\s[A-Za-z0-9]",s)
+  if x:
+   return True
+  else:
+    return False
 
 
 # Part C. reserved_us_tld
