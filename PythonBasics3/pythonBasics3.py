@@ -26,9 +26,7 @@ def starts_with_non_number(s):
 # Note: Be sure to use RegEx and that it works for any whitespace character 
 # with at least one character on either side!
 def multiple_words(s):
-  if s == " ":
-    return False
-  
+
   x = re.search("[A-Za-z0-9]\s[A-Za-z0-9]",s)
   if x:
    return True
@@ -44,6 +42,10 @@ def multiple_words(s):
 # Note: URLs will be in the format http://www.example.com. There will not be anything after the TLD
 # Hint: the URL should start with https and end with one of the TLDs
 def reserved_us_tld(s):
-  # YOUR CODE HERE
+  x = re.search("https.//www.+[A-Za-z0-9]+\.(gov|mil|edu)",s)
+  if x:
+    return True
+  else:
+    return False
   
-  return
+
