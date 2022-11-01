@@ -6,8 +6,7 @@ from flask import Flask, appcontext_tearing_down   # Flask is the web app that w
 from flask import render_template
 from flask import request
 from flask import redirect, url_for 
-from flask import Note as Note
-from flask import User as User
+
 from database import db
 app = Flask(__name__)     # create an app
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask_note_app.db'
