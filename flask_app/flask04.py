@@ -2,11 +2,17 @@
 
 # imports
 import os                 # os is used to get environment variables IP & PORT
-from flask import Flask   # Flask is the web app that we will customize
+from flask import Flask, appcontext_tearing_down   # Flask is the web app that we will customize
 from flask import render_template
 from flask import request
 from flask import redirect, url_for 
+from database import db
 app = Flask(__name__)     # create an app
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///flask_note_app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
+db.init_app(app)
+with app.app.context():
+    db.create_all()
 notes = {1: {'title': 'First Note', 'text:': 'This is my first note', 'date':'10-1-2020'},
 2: {'title': 'Second Note', 'text': 'This is my second note', 'date' : '10-2-2020'}, 
 3: {'title': 'Third Note' , 'text': 'This is my third note', 'date' : '10-3-2020'}}
