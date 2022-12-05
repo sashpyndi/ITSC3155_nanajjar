@@ -9,8 +9,10 @@ from flask import redirect, render_template, request, url_for
 from database import db
 from models import Note as Note
 from models import User as User
+from models import Comment as Comment
 from forms import RegisterForm
 from forms import LoginForm
+from forms import CommentForm
 from flask import session
 import bcrypt
 
@@ -49,7 +51,8 @@ def get_notes():
 def get_note(note_id):
     if session.get('user'):
       my_note = db.session.query(Note).filter_by(id=note_id).one()
-      return render_template('note.html', note=my_note, user=session['user'])
+      form = CommentForm()
+      return render_template('note.html', note=my_note, user=session['user'], form=form)
     else:
       return redirect(url_for('login'))
 @app.route('/notes/new', methods = ['GET', 'POST'])
@@ -84,8 +87,8 @@ def update_note(note_id):
 
         return redirect(url_for('get_notes'))
     else:
-      my_note = db.session.query(Note).filter_by(id=note_id).one()
-      return render_template('new.html', note=my_note, user= session['user'])
+       my_note = db.session.query(Note).filter_by(id=note_id).one()
+       return render_template('new.html', note=my_note, user= session['user'])
   else:
     return redirect(url_for('login'))
 @app.route('/notes/delete/<note_id>', methods=['POST'])
@@ -148,8 +151,21 @@ def logout():
     if session.get('user'):
         session.clear()
     return redirect(url_for('index'))
-app.run(host=os.getenv('IP', '127.0.0.1'),port=int(os.getenv('PORT', 5000)),debug=True)
 
+
+@app.route('/notes/<note_id>/comment', methods=['POST'])
+def new_comment(note_id):
+    if session.get('user'):
+      comment_form = CommentForm()
+      if comment_form.validate_on_submit():
+        comment_text = request.form['comment']
+        new_record = Comment(comment_text, int(note_id), session['user_id'])
+        db.session.add(new_record)
+        db.session.commit()
+      return redirect(url_for('get_note', note_id =note_id))
+    else:
+        return redirect(url_for('login'))
+app.run(host=os.getenv('IP', '127.0.0.1'),port=int(os.getenv('PORT', 5000)),debug=True)
 # To see the web page in your web browser, go to the url,
 #   http://127.0.0.1:5000
 
