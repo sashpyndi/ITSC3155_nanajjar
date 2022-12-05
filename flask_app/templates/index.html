@@ -15,6 +15,16 @@
         <h2>Use this site to maintain and organize your notes.</h2>
 
         <nav>
+        {% if user %}
+            <nav>
+              <a href = "{{ url_for('logout')}}">Logout</a>
+            </nav>
+         {% else %}
+            <nav>
+               <a href = "{{url_for('register')}}">Register ||</a>
+               <a href = "{{url_for('login')}}">Sign In</a>
+            </nav>
+         {% endif %}
              <a href="/index"> Home </a> ||
              <a href="/notes"> My notes </a>||
              <a href="/notes/new"> Add Note </a>

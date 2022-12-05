@@ -10,6 +10,7 @@ from database import db
 from models import Note as Note
 from models import User as User
 from forms import RegisterForm
+from forms import LoginForm
 from flask import session
 import bcrypt
 
@@ -39,33 +40,35 @@ def index():
     return render_template("index.html")
 @app.route('/notes')
 def get_notes():
- if session.get('user'):
-  my_notes = db.session.query(Note).filter_by(user_id=session['user_id']).all()
-  return render_template('notes.html', notes=my_notes, user=session['user'])
- else:
-  return redirect(url_for('login'))
+   if session.get('user'):
+     my_notes = db.session.query(Note).filter_by(user_id=session['user_id']).all()
+     return render_template('notes.html', notes=my_notes, user=session['user'])
+   else:
+    return redirect(url_for('login'))
 @app.route('/notes/<note_id>')
 def get_note(note_id):
-    a_user = db.session.query(User).filter_by(email='mogli@uncc.edu').one()
-    my_note = db.session.query(Note).filter_by(id=note_id).one()
-    return render_template('note.html', note=my_note, user=a_user)
+    if session.get('user'):
+      my_note = db.session.query(Note).filter_by(id=note_id).one()
+      return render_template('note.html', note=my_note, user=session['user'])
+    else:
+      return redirect(url_for('login'))
 @app.route('/notes/new', methods = ['GET', 'POST'])
 def new_note():
     if session.get('user'):
       if request.method == 'POST':
-       title = request.form['title']
-       text = request.form['noteText']
-       from datetime import date
-       today = date.today()
-       today = today.strftime("%m-%d-%Y")
-       new_record = Note(title, text, today, session['user_id'])
-       db.session.add(new_record)
-       db.session.commit()
-       redirect(url_for('get_notes'))
+        title = request.form['title']
+        text = request.form['noteText']
+        from datetime import date
+        today = date.today()
+        today = today.strftime("%m-%d-%Y")
+        new_record = Note(title, text, today, session['user_id'])
+        db.session.add(new_record)
+        db.session.commit()
+        return redirect(url_for('get_notes'))
       else:
         return render_template('new.html', user=session['user'])
     else:
-        return redirect(url_for('login'))
+     return redirect(url_for('login'))
 
 @app.route('/notes/edit/<note_id>', methods=['GET', 'POST'])
 def update_note(note_id):
@@ -140,6 +143,11 @@ def login():
     else:
         # form did not validate or GET request
         return render_template("login.html", form=login_form)
+@app.route('/logout')
+def logout():
+    if session.get('user'):
+        session.clear()
+    return redirect(url_for('index'))
 app.run(host=os.getenv('IP', '127.0.0.1'),port=int(os.getenv('PORT', 5000)),debug=True)
 
 # To see the web page in your web browser, go to the url,
